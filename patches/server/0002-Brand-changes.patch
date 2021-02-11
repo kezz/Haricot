@@ -1,4 +1,4 @@
-From 6b685e276bfa61f295b983fc8340ec99f1dc09f3 Mon Sep 17 00:00:00 2001
+From 23f81d3e8ea11477fd1c7bc69daa75f9e5c762c5 Mon Sep 17 00:00:00 2001
 From: Kieran Wallbanks <kieran.wallbanks@gmail.com>
 Date: Thu, 11 Feb 2021 10:58:00 +0000
 Subject: [PATCH] Brand changes
@@ -60,10 +60,10 @@ index ccf2d0b09..44678bef0 100644
  
      public CrashReport b(CrashReport crashreport) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 9ad6ea5ef..62a3bd731 100644
+index 85023c68a..455ff92b0 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -232,7 +232,7 @@ import javax.annotation.Nullable; // Paper
+@@ -231,7 +231,7 @@ import javax.annotation.Nullable; // Paper
  import javax.annotation.Nonnull; // Paper
  
  public final class CraftServer implements Server {

@@ -1,4 +1,4 @@
-From 471477ab6b251415eda27f05f6368c5478678465 Mon Sep 17 00:00:00 2001
+From 0d6d3affd6fc6d6f05b2a57fa1eb7161b4ba037b Mon Sep 17 00:00:00 2001
 From: Kieran Wallbanks <kieran.wallbanks@gmail.com>
 Date: Thu, 11 Feb 2021 10:58:30 +0000
 Subject: [PATCH] Haricot verion check and config file
@@ -202,7 +202,7 @@ index 000000000..c94e5f5a4
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index 02303f00e..010f391b3 100644
+index f5ab99156..7c30bcca6 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
 @@ -94,6 +94,8 @@ public abstract class World implements GeneratorAccess, AutoCloseable {
@@ -223,10 +223,10 @@ index 02303f00e..010f391b3 100644
          this.generator = gen;
          this.world = new CraftWorld((WorldServer) this, gen, env);
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 62a3bd731..d38eef3fd 100644
+index 455ff92b0..4cdb3cd6a 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -861,6 +861,7 @@ public final class CraftServer implements Server {
+@@ -860,6 +860,7 @@ public final class CraftServer implements Server {
  
          org.spigotmc.SpigotConfig.init((File) console.options.valueOf("spigot-settings")); // Spigot
          com.destroystokyo.paper.PaperConfig.init((File) console.options.valueOf("paper-settings")); // Paper
@@ -234,7 +234,7 @@ index 62a3bd731..d38eef3fd 100644
          for (WorldServer world : console.getWorlds()) {
              world.worldDataServer.setDifficulty(config.difficulty);
              world.setSpawnFlags(config.spawnMonsters, config.spawnAnimals);
-@@ -895,6 +896,7 @@ public final class CraftServer implements Server {
+@@ -894,6 +895,7 @@ public final class CraftServer implements Server {
              }
              world.spigotConfig.init(); // Spigot
              world.paperConfig.init(); // Paper
