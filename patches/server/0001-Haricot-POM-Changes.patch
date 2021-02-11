@@ -1,0 +1,91 @@
+From a0e157d5b2922469af40062e124872391a8d3555 Mon Sep 17 00:00:00 2001
+From: Kieran Wallbanks <kieran.wallbanks@gmail.com>
+Date: Thu, 11 Feb 2021 10:57:30 +0000
+Subject: [PATCH] Haricot POM Changes
+
+---
+ pom.xml                                       | 22 +++++++++----------
+ .../bukkit/craftbukkit/util/Versioning.java   |  2 +-
+ 2 files changed, 12 insertions(+), 12 deletions(-)
+
+diff --git a/pom.xml b/pom.xml
+index 9ba379b7e..ca32e0ee8 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -1,11 +1,10 @@
+ <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+     <modelVersion>4.0.0</modelVersion>
+-    <artifactId>paper</artifactId>
++    <artifactId>haricot</artifactId>
+     <packaging>jar</packaging>
+     <version>1.16.5-R0.1-SNAPSHOT</version>
+-    <name>Paper</name>
+-    <url>https://papermc.io</url>
++    <name>Haricot-Server</name>
+ 
+     <properties>
+         <!-- <skipTests>true</skipTests> Paper - This [was] not going to end well -->
+@@ -14,21 +13,22 @@
+         <bt.name>git</bt.name>
+         <minecraft.version>1.16.5</minecraft.version>
+         <minecraft_version>1_16_R3</minecraft_version>
+-        <maven.compiler.source>1.8</maven.compiler.source>
+-        <maven.compiler.target>1.8</maven.compiler.target>
++        <maven.compiler.source>15</maven.compiler.source>
++        <maven.compiler.target>15</maven.compiler.target>
++        <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss'Z'</maven.build.timestamp.format>
+     </properties>
+ 
+     <parent>
+-        <groupId>com.destroystokyo.paper</groupId>
+-        <artifactId>paper-parent</artifactId>
++        <groupId>ml.beancraft.haricot</groupId>
++        <artifactId>haricot-parent</artifactId>
+         <version>dev-SNAPSHOT</version>
+         <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+     <dependencies>
+         <dependency>
+-            <groupId>com.destroystokyo.paper</groupId>
+-            <artifactId>paper-api</artifactId>
++            <groupId>ml.beancraft.haricot</groupId>
++            <artifactId>haricot-api</artifactId>
+             <version>${project.version}</version>
+             <scope>compile</scope>
+         </dependency>
+@@ -173,7 +173,7 @@
+ 
+     <!-- This builds a completely 'ready to start' jar with all dependencies inside -->
+     <build>
+-        <finalName>paper-${minecraft.version}</finalName>
++        <finalName>haricot-${minecraft.version}</finalName>
+         <defaultGoal>clean install</defaultGoal> <!-- Paper -->
+         <plugins>
+             <plugin>
+@@ -181,7 +181,7 @@
+                 <artifactId>gitdescribe-maven-plugin</artifactId>
+                 <version>1.3</version>
+                 <configuration>
+-                    <outputPrefix>git-Paper-</outputPrefix>
++                    <outputPrefix>git-Haricot-</outputPrefix>
+                     <scmDirectory>..</scmDirectory>
+                 </configuration>
+                 <executions>
+diff --git a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
+index 674096cab..69811e145 100644
+--- a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
++++ b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
+@@ -11,7 +11,7 @@ public final class Versioning {
+     public static String getBukkitVersion() {
+         String result = "Unknown-Version";
+ 
+-        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/com.destroystokyo.paper/paper-api/pom.properties");
++        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/ml.beancraft.haricot/haricot-api/pom.properties");
+         Properties properties = new Properties();
+ 
+         if (stream != null) {
+-- 
+2.25.1
+

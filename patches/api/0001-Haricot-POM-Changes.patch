@@ -1,0 +1,48 @@
+From 8075596af6631402af40a3e948b5fdd20f46c403 Mon Sep 17 00:00:00 2001
+From: Kieran Wallbanks <kieran.wallbanks@gmail.com>
+Date: Thu, 11 Feb 2021 10:57:00 +0000
+Subject: [PATCH] Haricot POM Changes
+
+---
+ pom.xml | 16 +++++++---------
+ 1 file changed, 7 insertions(+), 9 deletions(-)
+
+diff --git a/pom.xml b/pom.xml
+index 6c6ae6b4..525fcb07 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -3,24 +3,22 @@
+          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+     <modelVersion>4.0.0</modelVersion>
+     <parent>
+-        <groupId>com.destroystokyo.paper</groupId>
+-        <artifactId>paper-parent</artifactId>
++        <groupId>ml.beancraft.haricot</groupId>
++        <artifactId>haricot-parent</artifactId>
+         <version>dev-SNAPSHOT</version>
++        <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>com.destroystokyo.paper</groupId>
+-    <artifactId>paper-api</artifactId>
++    <artifactId>haricot-api</artifactId>
+     <version>1.16.5-R0.1-SNAPSHOT</version>
+     <packaging>jar</packaging>
+ 
+-    <name>Paper-API</name>
+-    <url>https://github.com/PaperMC/Paper</url>
+-    <description>An enhanced plugin API for Minecraft servers.</description>
++    <name>Haricot-API</name>
+ 
+     <properties>
+         <!-- <skipTests>true</skipTests> Paper - This [was] not going to end well -->
+-        <maven.compiler.source>1.8</maven.compiler.source>
+-        <maven.compiler.target>1.8</maven.compiler.target>
++        <maven.compiler.source>15</maven.compiler.source>
++        <maven.compiler.target>15</maven.compiler.target>
+         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+     </properties>
+ 
+-- 
+2.25.1
+

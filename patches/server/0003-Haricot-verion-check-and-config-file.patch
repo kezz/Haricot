@@ -1,0 +1,287 @@
+From 471477ab6b251415eda27f05f6368c5478678465 Mon Sep 17 00:00:00 2001
+From: Kieran Wallbanks <kieran.wallbanks@gmail.com>
+Date: Thu, 11 Feb 2021 10:58:30 +0000
+Subject: [PATCH] Haricot verion check and config file
+
+---
+ .../paper/PaperVersionFetcher.java            |   4 +-
+ .../ml/beancraft/haricot/HaricotConfig.java   | 116 ++++++++++++++++++
+ .../haricot/HaricotVersionFetcher.java        |  35 ++++++
+ src/main/java/net/minecraft/server/World.java |   3 +
+ .../org/bukkit/craftbukkit/CraftServer.java   |   2 +
+ .../java/org/bukkit/craftbukkit/Main.java     |   9 ++
+ .../craftbukkit/util/CraftMagicNumbers.java   |   2 +-
+ 7 files changed, 168 insertions(+), 3 deletions(-)
+ create mode 100644 src/main/java/ml/beancraft/haricot/HaricotConfig.java
+ create mode 100644 src/main/java/ml/beancraft/haricot/HaricotVersionFetcher.java
+
+diff --git a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
+index 49a38c660..60402c2e1 100644
+--- a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
++++ b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
+@@ -90,7 +90,7 @@ public class PaperVersionFetcher implements VersionFetcher {
+     }
+ 
+     // Contributed by Techcable <Techcable@outlook.com> in GH-65
+-    private static int fetchDistanceFromGitHub(@Nonnull String repo, @Nonnull String branch, @Nonnull String hash) {
++    protected static int fetchDistanceFromGitHub(@Nonnull String repo, @Nonnull String branch, @Nonnull String hash) { // Haricot - expose to extending classes
+         try {
+             HttpURLConnection connection = (HttpURLConnection) new URL("https://api.github.com/repos/" + repo + "/compare/" + branch + "..." + hash).openConnection();
+             connection.connect();
+@@ -117,7 +117,7 @@ public class PaperVersionFetcher implements VersionFetcher {
+     }
+ 
+     @Nullable
+-    private String getHistory() {
++    protected String getHistory() { // Haricot - expose to extending classes
+         final VersionHistoryManager.VersionData data = VersionHistoryManager.INSTANCE.getVersionData();
+         if (data == null) {
+             return null;
+diff --git a/src/main/java/ml/beancraft/haricot/HaricotConfig.java b/src/main/java/ml/beancraft/haricot/HaricotConfig.java
+new file mode 100644
+index 000000000..7d4fffae4
+--- /dev/null
++++ b/src/main/java/ml/beancraft/haricot/HaricotConfig.java
+@@ -0,0 +1,116 @@
++package ml.beancraft.haricot;
++
++import org.bukkit.Bukkit;
++import org.bukkit.configuration.file.YamlConfiguration;
++
++import java.io.File;
++import java.lang.reflect.Method;
++import java.lang.reflect.Modifier;
++
++public final class HaricotConfig {
++
++    public static final String CONFIG_HEADER = "Configuration file for Haricot.";
++    public static final int CURRENT_CONFIG_VERSION = 0;
++
++    private static final Object[] EMPTY = new Object[0];
++
++    private static File configFile;
++    private static YamlConfiguration config;
++    private static int configVersion;
++
++    public static void init(final File file) {
++        ml.beancraft.haricot.HaricotConfig.configFile = file;
++        ml.beancraft.haricot.HaricotConfig.config = new YamlConfiguration();
++        config.options().header(CONFIG_HEADER);
++        config.options().copyDefaults(true);
++
++        if (!file.exists()) {
++            try {
++                file.createNewFile();
++            } catch (final Exception ex) {
++                System.out.println("Failure to create haricot config");
++                ex.printStackTrace();
++            }
++        } else {
++            try {
++                config.load(file);
++            } catch (final Exception ex) {
++                System.out.println("Failure to load haricot config");
++                throw new RuntimeException(ex);
++            }
++        }
++
++        ml.beancraft.haricot.HaricotConfig.load(ml.beancraft.haricot.HaricotConfig.class, null);
++    }
++
++    public static void load(Class<?> clazz, Object instance) {
++        ml.beancraft.haricot.HaricotConfig.configVersion = ml.beancraft.haricot.HaricotConfig.getInt("config-version-please-do-not-modify-me", CURRENT_CONFIG_VERSION);
++
++        for (final Method method : clazz.getDeclaredMethods()) {
++            if (method.getReturnType() != void.class || method.getParameterCount() != 0 ||
++                    !Modifier.isPrivate(method.getModifiers()) || (instance == null && !Modifier.isStatic(method.getModifiers()))) {
++                continue;
++            }
++
++            try {
++                method.setAccessible(true);
++                method.invoke(instance, EMPTY);
++            } catch (final Exception ex) {
++                throw new RuntimeException(ex);
++            }
++        }
++
++        /* We re-save to add new options */
++        try {
++            config.save(ml.beancraft.haricot.HaricotConfig.configFile);
++        } catch (final Exception ex) {
++            System.out.println("Unable to save origami config");
++            ex.printStackTrace();
++        }
++    }
++
++    private static boolean getBoolean(final String path, final boolean dfl) {
++        ml.beancraft.haricot.HaricotConfig.config.addDefault(path, Boolean.valueOf(dfl));
++        return ml.beancraft.haricot.HaricotConfig.config.getBoolean(path, dfl);
++    }
++
++    private static int getInt(final String path, final int dfl) {
++        ml.beancraft.haricot.HaricotConfig.config.addDefault(path, Integer.valueOf(dfl));
++        return ml.beancraft.haricot.HaricotConfig.config.getInt(path, dfl);
++    }
++
++    private static double getDouble(final String path, final double dfl) {
++        ml.beancraft.haricot.HaricotConfig.config.addDefault(path, Double.valueOf(dfl));
++        return ml.beancraft.haricot.HaricotConfig.config.getDouble(path, dfl);
++    }
++
++    public static final class WorldConfig {
++
++        public final String worldName;
++
++        public WorldConfig(final String worldName) {
++            this.worldName = worldName;
++            this.init();
++        }
++
++        public void init() {
++            load(WorldConfig.class, this);
++        }
++
++        private boolean getBoolean(final String path, final boolean dfl) {
++            config.addDefault("worlds.default." + path, Boolean.valueOf(dfl));
++            return config.getBoolean("worlds." + worldName + "." + path, config.getBoolean("worlds.default." + path, dfl));
++        }
++
++        private int getInt(final String path, final int dfl) {
++            config.addDefault("worlds.default." + path, Integer.valueOf(dfl));
++            return config.getInt("worlds." + worldName + "." + path, config.getInt("worlds.default." + path, dfl));
++        }
++
++        private double getDouble(final String path, final double dfl) {
++            config.addDefault("worlds.default." + path, Double.valueOf(dfl));
++            return config.getDouble("worlds." + worldName + "." + path, config.getDouble("worlds.default." + path, dfl));
++        }
++    }
++
++}
+\ No newline at end of file
+diff --git a/src/main/java/ml/beancraft/haricot/HaricotVersionFetcher.java b/src/main/java/ml/beancraft/haricot/HaricotVersionFetcher.java
+new file mode 100644
+index 000000000..c94e5f5a4
+--- /dev/null
++++ b/src/main/java/ml/beancraft/haricot/HaricotVersionFetcher.java
+@@ -0,0 +1,35 @@
++package ml.beancraft.haricot;
++
++import com.destroystokyo.paper.PaperVersionFetcher;
++
++import javax.annotation.Nonnull;
++
++public class HaricotVersionFetcher extends PaperVersionFetcher {
++
++    @Nonnull
++    @Override
++    public String getVersionMessage(@Nonnull String serverVersion) {
++        String[] parts = serverVersion.substring("git-Origami-".length()).split("[-\\s]");
++        String[] mcParts = parts.length > 2 ? parts[2].split("\\.") : new String[0];
++        String updateMessage = getUpdateStatusMessage("kezz/Haricot", mcParts.length > 0 ? mcParts[0] + "." + mcParts[1] : "main", parts[0]);
++        String history = getHistory();
++
++        return history != null ? history + "\n" + updateMessage : updateMessage;
++    }
++
++    private static String getUpdateStatusMessage(@Nonnull String repo, @Nonnull String branch, @Nonnull String versionInfo) {
++        versionInfo = versionInfo.replace("\"", "");
++        int distance = fetchDistanceFromGitHub(repo, branch, versionInfo);
++
++        switch (distance) {
++            case -1:
++                return "Error obtaining version information";
++            case 0:
++                return "You are running the latest version";
++            case -2:
++                return "Unknown version";
++            default:
++                return "You are " + distance + " version(s) behind";
++        }
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
+index 02303f00e..010f391b3 100644
+--- a/src/main/java/net/minecraft/server/World.java
++++ b/src/main/java/net/minecraft/server/World.java
+@@ -94,6 +94,8 @@ public abstract class World implements GeneratorAccess, AutoCloseable {
+     public final com.destroystokyo.paper.PaperWorldConfig paperConfig; // Paper
+     public final ChunkPacketBlockController chunkPacketBlockController; // Paper - Anti-Xray
+ 
++    public final ml.beancraft.haricot.HaricotConfig.WorldConfig haricotConfig; // Haricot - World Config
++
+     public final co.aikar.timings.WorldTimingsHandler timings; // Paper
+     public static BlockPosition lastPhysicsProblem; // Spigot
+     private org.spigotmc.TickLimiter entityLimiter;
+@@ -124,6 +126,7 @@ public abstract class World implements GeneratorAccess, AutoCloseable {
+     protected World(WorldDataMutable worlddatamutable, ResourceKey<World> resourcekey, final DimensionManager dimensionmanager, Supplier<GameProfilerFiller> supplier, boolean flag, boolean flag1, long i, org.bukkit.generator.ChunkGenerator gen, org.bukkit.World.Environment env, java.util.concurrent.Executor executor) { // Paper
+         this.spigotConfig = new org.spigotmc.SpigotWorldConfig(((WorldDataServer) worlddatamutable).getName()); // Spigot
+         this.paperConfig = new com.destroystokyo.paper.PaperWorldConfig(((WorldDataServer) worlddatamutable).getName(), this.spigotConfig); // Paper
++        this.haricotConfig = new ml.beancraft.haricot.HaricotConfig.WorldConfig(((WorldDataServer)worlddatamutable).getName()); // Haricot - World Config
+         this.chunkPacketBlockController = this.paperConfig.antiXray ? new ChunkPacketBlockControllerAntiXray(this, executor) : ChunkPacketBlockController.NO_OPERATION_INSTANCE; // Paper - Anti-Xray
+         this.generator = gen;
+         this.world = new CraftWorld((WorldServer) this, gen, env);
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index 62a3bd731..d38eef3fd 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -861,6 +861,7 @@ public final class CraftServer implements Server {
+ 
+         org.spigotmc.SpigotConfig.init((File) console.options.valueOf("spigot-settings")); // Spigot
+         com.destroystokyo.paper.PaperConfig.init((File) console.options.valueOf("paper-settings")); // Paper
++        ml.beancraft.haricot.HaricotConfig.init((File) console.options.valueOf("haricot-settings")); // Haricot - Server Config
+         for (WorldServer world : console.getWorlds()) {
+             world.worldDataServer.setDifficulty(config.difficulty);
+             world.setSpawnFlags(config.spawnMonsters, config.spawnAnimals);
+@@ -895,6 +896,7 @@ public final class CraftServer implements Server {
+             }
+             world.spigotConfig.init(); // Spigot
+             world.paperConfig.init(); // Paper
++            world.haricotConfig.init(); // Haricot - World Config
+         }
+ 
+         Plugin[] pluginClone = pluginManager.getPlugins().clone(); // Paper
+diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
+index c0ab67390..1be65662d 100644
+--- a/src/main/java/org/bukkit/craftbukkit/Main.java
++++ b/src/main/java/org/bukkit/craftbukkit/Main.java
+@@ -139,6 +139,14 @@ public class Main {
+                         .describedAs("Yml file");
+                 // Paper end
+ 
++                // Haricot Start - Server Config
++                acceptsAll(asList("haricot", "haricot-settings"), "File for haricot settings")
++                        .withRequiredArg()
++                        .ofType(File.class)
++                        .defaultsTo(new File("haricot.yml"))
++                        .describedAs("Yml file");
++                // Haricot end - Server Config
++
+                 // Paper start
+                 acceptsAll(asList("server-name"), "Name of the server")
+                         .withRequiredArg()
+@@ -272,6 +280,7 @@ public class Main {
+                 }
+                 // Paper end
+                 System.setProperty( "library.jansi.version", "Paper" ); // Paper - set meaningless jansi version to prevent git builds from crashing on Windows
++                ml.beancraft.haricot.HaricotConfig.init((java.io.File) options.valueOf("haricot-settings")); // Haricot - Server Config
+                 System.out.println("Loading libraries, please wait...");
+                 net.minecraft.server.Main.main(options);
+             } catch (Throwable t) {
+diff --git a/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java b/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
+index ac5003dc8..b9e2934a2 100644
+--- a/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
++++ b/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
+@@ -370,7 +370,7 @@ public final class CraftMagicNumbers implements UnsafeValues {
+ 
+     @Override
+     public com.destroystokyo.paper.util.VersionFetcher getVersionFetcher() {
+-        return new com.destroystokyo.paper.PaperVersionFetcher();
++        return new ml.beancraft.haricot.HaricotVersionFetcher(); // Haricot - user our own version fetcher
+     }
+ 
+     @Override
+-- 
+2.25.1
+
