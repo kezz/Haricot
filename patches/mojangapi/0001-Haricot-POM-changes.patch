@@ -1,0 +1,59 @@
+From 92c77e90bbb06187b7ba044ca794fd84c9e760d3 Mon Sep 17 00:00:00 2001
+From: Kieran Wallbanks <kieran.wallbanks@gmail.com>
+Date: Thu, 11 Feb 2021 12:05:31 +0000
+Subject: [PATCH] Haricot POM changes
+
+---
+ pom.xml | 20 +++++++++-----------
+ 1 file changed, 9 insertions(+), 11 deletions(-)
+
+diff --git a/pom.xml b/pom.xml
+index 7712a87..43e83b5 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -3,24 +3,22 @@
+          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+     <modelVersion>4.0.0</modelVersion>
+     <parent>
+-        <groupId>com.destroystokyo.paper</groupId>
+-        <artifactId>paper-parent</artifactId>
++        <groupId>ml.beancraft.haricot</groupId>
++        <artifactId>haricot-parent</artifactId>
+         <version>dev-SNAPSHOT</version>
++        <relativePath>../pom.xml</relativePath>
+     </parent>
+ 
+-    <groupId>com.destroystokyo.paper</groupId>
+-    <artifactId>paper-mojangapi</artifactId>
++    <artifactId>haricot-mojangapi</artifactId>
+     <version>1.16.5-R0.1-SNAPSHOT</version>
+     <packaging>jar</packaging>
+ 
+-    <name>Paper-MojangAPI</name>
+-    <url>https://github.com/PaperMC/Paper</url>
+-    <description>API additions that utilize Mojang Specific API's</description>
++    <name>Haricot-MojangAPI</name>
+ 
+     <properties>
+         <!-- <skipTests>true</skipTests> Paper - This [was] not going to end well -->
+-        <maven.compiler.source>1.8</maven.compiler.source>
+-        <maven.compiler.target>1.8</maven.compiler.target>
++        <maven.compiler.source>15</maven.compiler.source>
++        <maven.compiler.target>15</maven.compiler.target>
+         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+     </properties>
+ 
+@@ -49,8 +47,8 @@
+ 
+     <dependencies>
+         <dependency>
+-            <groupId>com.destroystokyo.paper</groupId>
+-            <artifactId>paper-api</artifactId>
++            <groupId>ml.beancraft.haricot</groupId>
++            <artifactId>haricot-api</artifactId>
+             <version>${project.version}</version>
+             <scope>provided</scope>
+         </dependency>
+-- 
+2.25.1
+
