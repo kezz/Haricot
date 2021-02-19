@@ -1,9 +1,13 @@
 Haricot
 ==
 
-Custom paper fork used by [Beancraft](https://beancraft.ml). The fork is based 
-off of the framework used in 
-[Phoenix616's Origami](https://github.com/Phoenix616/Origami).
+Custom Paper fork used by [Beancraft](https://beancraft.ml). The fork is based 
+on the framework used in
+[Phoenix616's Origami](https://github.com/Minebench/Origami/). For a full list 
+of changes, read the [changelog](CHANGELOG.md).
+
+There is no support guaranteed with this fork. However, if you do run into any 
+issues, drop Kezz#4616 a message on Discord and they will be happy to help.
 
 ## License
 The PATCHES-LICENSE file describes the license for api & server patches
@@ -11,7 +15,7 @@ by Kezz found in `./patches/api` and `./patches/server`. Other patches
 are either licensed under MIT or another one specified in the patch file itself.
 
 Everything else is licensed under the MIT license. 
-See https://github.com/Phoenix616/Origami, 
+See https://github.com/Minebench/Origami, 
 https://github.com/Spottedleaf/Tuinity, https://github.com/pl3xgaming/Purpur,
 https://github.com/starlis/empirecraft and https://github.com/electronicboy/byof
 for the license of material used/modified by this project.
